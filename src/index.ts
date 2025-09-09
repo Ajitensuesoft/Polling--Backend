@@ -15,10 +15,19 @@ import { Server } from "socket.io";
 
 const server = http.createServer(app);
 
+// export const io = new Server(server, {
+//   cors: {
+//     origin: "https://polling-frontend-pi.vercel.app",
+//     credentials: true,
+//   },
+// });
+
 export const io = new Server(server, {
   cors: {
     origin: "https://polling-frontend-pi.vercel.app",
     credentials: true,
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Authorization", "Content-Type"],
   },
 });
 
