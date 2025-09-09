@@ -101,12 +101,21 @@ return res.status(400).json({
         const token=jwt.sign(optionss,JWT_SECRET,{expiresIn:"3hr"});
 console.log("token",token);
 
-     const options: any = {
-      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    };
+    //  const options: any = {
+    //   expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+    //   httpOnly: true,
+    //   secure:process.env.NODE_ENV === "production",
+    //   sameSite:'none',
+    // };
+
+    const options = {
+  httpOnly: true,
+  secure: true, // Render = always https
+  sameSite: "none" as const,
+  expires: new Date(Date.now() + 3*24*60*60*1000),
+};
+
+
         res.cookie("token",token,options).status(200).json({
             message:"Account created successfully",
             data:{

@@ -11,31 +11,32 @@ import cookieParser from "cookie-parser";
 
 import http from "http";
 import { Server } from "socket.io";
-app.use(cookieParser());
 
 
 const server = http.createServer(app);
 
 export const io = new Server(server, {
-    cors: {
-        origin: "http://localhost:5173",
-        credentials: true,
-    },
+  cors: {
+    origin: "https://polling-frontend-pi.vercel.app",
+    credentials: true,
+  },
 });
+
+
 
 //votes socket
 
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
-
- 
+  
+  
   socket.on("vote", (data) => {
     console.log("Vote received:", data);
-
-  
+    
+    
     io.emit("voteUpdate", data);
   });
-
+  
   socket.on("disconnect", () => {
     console.log(" Client disconnected:", socket.id);
   });
@@ -50,10 +51,13 @@ app.get("/",(req,res)=>{
 
 
 app.use(cors({
-    origin:"http://localhost:5173",
-    credentials:true,
-}))
+  origin: ["http://localhost:5173", "https://polling-frontend-pi.vercel.app"], // allow local + deployed frontend
+  // credentials: true, // allow cookies
+   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Authorization', 'Content-Type'],
+}));
 
+app.use(cookieParser());
 app.use(express.json());
 
 connectDb();
