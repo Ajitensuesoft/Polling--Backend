@@ -18,7 +18,7 @@ const server = http.createServer(app);
 
 export const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "https://polling-frontend-pi.vercel.app",
         credentials: true,
     },
 });
@@ -50,7 +50,7 @@ app.get("/",(req,res)=>{
 
 
 app.use(cors({
-    origin:"http://localhost:5173",
+    origin:"https://polling-frontend-pi.vercel.app",
     credentials:true,
 }))
 
