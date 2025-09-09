@@ -1,0 +1,47 @@
+import { Request, Response, NextFunction } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import dotenv from "dotenv";
+
+// Extend Express Request interface to include 'user'
+declare global {
+  namespace Express {
+    interface Request {
+      user?: string | JwtPayload;
+    }
+  }
+}
+
+interface Idecoder{
+  
+  id: string;
+  name: string;
+  email: string;
+
+}
+
+dotenv.config();
+
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
+
+
+export const isAuth = (req:any, res: Response, next: NextFunction) => {
+  try {
+    const token = req.cookies?.token;
+    console.log("token",token);
+
+    if (!token) {
+      return res.status(401).json({ message: "Token not found" });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET) as Idecoder;
+    console.log("decoded",decoded);
+  
+  
+    req.userId = decoded.id as string;
+
+    next(); 
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token " });
+  }
+};
