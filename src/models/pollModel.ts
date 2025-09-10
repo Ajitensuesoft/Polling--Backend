@@ -13,6 +13,9 @@ interface IPOLL{
     createdBy:string;
     Question:string;
     Option:IOPTION[];
+    ExpiredAt:Date,
+    status:String;
+    // comment:Schema.Types.ObjectId
 }
 
 
@@ -62,6 +65,15 @@ const PollSchema=new mongoose.Schema<IPOLL>({
     Option:{
         type:[optionSchema],
     },
+    ExpiredAt:{
+        type:Date,
+        required:true,
+    },
+    status:{
+        type:String,
+        default:"open"
+    }
+    
 
 },{timestamps:true});
 

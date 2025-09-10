@@ -6,7 +6,7 @@ const routes=express.Router();
 import {Signup,Login,Logout} from "../controllers/User.controller"
 
 import {isAuth} from "../middlewares/authMiddleware";
-import {PollCreate,AllPolls,SinglePoll,PollVote}  from "../controllers/PollController";
+import {PollCreate,AllPolls,SinglePoll,PollVote,CommentPoll,CreateComment, Allcomments,updateComment,deleteComment,exportAllPolls}  from "../controllers/PollController";
 
 routes.post("/signup",Signup);
 routes.post("/login",Login);
@@ -24,6 +24,13 @@ routes.get("/singlePoll/:id",isAuth,SinglePoll);
 
 //votes
 routes.post("/votePoll",isAuth,PollVote);
+routes.get("/commentPoll/:id",isAuth,CommentPoll);
+routes.post("/createComment",isAuth,CreateComment);
 
+routes.get("/allcomments",isAuth,Allcomments);
 
+routes.put("/updatedComment",isAuth,updateComment)
+routes.delete("/deleteComment/:id",isAuth,deleteComment)
+
+routes.get("/csvdata",isAuth,exportAllPolls);
 export default routes;

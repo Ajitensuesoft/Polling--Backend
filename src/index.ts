@@ -11,6 +11,8 @@ import cookieParser from "cookie-parser";
 
 import http from "http";
 import { Server } from "socket.io";
+import cron from "node-cron";
+import Poll from "./models/pollModel";
 
 
 const server = http.createServer(app);
@@ -21,10 +23,10 @@ const server = http.createServer(app);
 //     credentials: true,
 //   },
 // });
-
+// ["http://localhost:5173", "https://polling-frontend-ephz.vercel.app"]
 export const io = new Server(server, {
   cors: {
-    origin: "https://polling-frontend-ephz.vercel.app",
+    origin: ["http://localhost:5173", "https://polling-frontend-ephz.vercel.app"],
     credentials: true,
     methods: ["GET", "POST"],
     allowedHeaders: ["Authorization", "Content-Type"],
@@ -46,11 +48,40 @@ io.on("connection", (socket) => {
     io.emit("voteUpdate", data);
   });
   
+
+  //for comment portion
+ socket.on("newComment", (comment) => {
+    console.log("New comment:", comment);
+    io.emit("commentAdded", comment); 
+  });
+
+  socket.on("updateComment", (comment) => {
+    console.log("Updated comment:", comment);
+    io.emit("commentUpdated", comment); 
+  });
+
+  socket.on("deleteComment", (commentId) => {
+    console.log("Deleted comment ID:", commentId);
+    io.emit("commentDeleted", commentId); 
+  });
+
+
   socket.on("disconnect", () => {
     console.log(" Client disconnected:", socket.id);
   });
 });
 
+
+cron.schedule("* * * * *", async () => {
+  const closed = await Poll.updateMany(
+    { ExpiredAt: { $lte: new Date() }, status: "open" },
+    { status: "closed" }
+  );
+
+  if (closed.modifiedCount > 0) {
+    io.emit("polls-closed"); 
+  }
+});
 
 
 

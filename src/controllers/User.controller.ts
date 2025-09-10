@@ -62,79 +62,7 @@ return res.status(500).json({
 
 
 
-// export const Login=async(req:Request,res:Response)=>{
-//           let {email,password}=req.body;
-//           console.log("email,password",email,password);
-//           if(!email || !password){
-// return res.status(400).json({
-//     message:"all fields are required"
-// })
-//           }
 
-//     try{
-
-//         const isExist=await USER.findOne({email:email});
-//         console.log("isExist",isExist);
-//         if(!isExist){
-//             return res.status(401).json({
-//                 message:"user not exist",
-//             })
-//         }
-
-//         let isMatch=await bcrypt.compare(password,isExist.password);
-//         console.log("isMatch",isMatch);
-//         if(!isMatch){
-//             return res.status(401).json({
-//                 message:"invalid credatianls or password is incorrect",
-                
-//             })
-//         }
-
-
-//         let optionss={
-//             id:isExist.id,
-//             name:isExist.name,
-//             email:isExist.email,
-//         }
-
-
-//         const token=jwt.sign(optionss,JWT_SECRET,{expiresIn:"3hr"});
-// console.log("token",token);
-
-//     //  const options: any = {
-//     //   expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-//     //   httpOnly: true,
-//     //   secure:process.env.NODE_ENV === "production",
-//     //   sameSite:'none',
-//     // };
-
-//     const options = {
-//   httpOnly: true,
-//   secure: true, // Render = always https
-//   sameSite: "none" as const,
-//   expires: new Date(Date.now() + 3*24*60*60*1000),
-// };
-
-
-//         res.cookie("token",token,options).status(200).json({
-//             message:"Account created successfully",
-//             data:{
-//                 user:{
-//                     name:isExist.name,
-//                     email:isExist.email,
-//                     id:isExist._id,
-//                 },
-//                 token:token
-//             }
-//         })
-
-//     }
-
-//     catch(err){
-// return res.status(500).json({
-//     message:"internal server error"
-// })    }
-// }
 
 
 export const Login = async (req: Request, res: Response) => {
