@@ -119,45 +119,84 @@ export const SinglePoll=async(req:any,res:any)=>{
 
 
 
+// export const PollVote = async (req: any, res: any) => {
+//   const { PollId, OptId, userId,name } = req.body;
+//   console.log("PollId, OptId, userId", PollId, OptId, userId,name);
+
+
+//   const userId1=req.userId as string;
+//   try {
+    
+//     const poll = await Poll.findOne({ _id: PollId, "Option._id": OptId });
+//     if (!poll) {
+//       return res.status(404).json({ message: "Poll or option not found" });
+//     }
+
+//  const userId=userId1;
+//     const existingVote = await Voter.findOne({ pollId: PollId, userId });
+//     if (existingVote) {
+//       return res.status(400).json({ message: "User already voted for this poll" });
+//     }
+
+    
+//     const newVoter = new Voter({ userId, pollId: PollId, optionId: OptId });
+//     await newVoter.save();
+
+    
+//    let updatedPoll= await Poll.updateOne(
+//       { _id: PollId, "Option._id": OptId },
+//       { $push: { "Option.$.votes": { userId,name} } }
+      
+//     );
+// console.log("updatedPoll",updatedPoll);
+//     return res.status(200).json({ message: "Vote recorded successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     return res.status(500).json({ message: "Internal server error", });
+//   }
+// };
+
+
 export const PollVote = async (req: any, res: any) => {
-  const { PollId, OptId, userId,name } = req.body;
-  console.log("PollId, OptId, userId", PollId, OptId, userId,name);
-
-
-  const userId1=req.userId as string;
+  const { PollId, OptId, name } = req.body;
+  const userId = req.userId as string; 
   try {
     
     const poll = await Poll.findOne({ _id: PollId, "Option._id": OptId });
     if (!poll) {
       return res.status(404).json({ message: "Poll or option not found" });
     }
-
- const userId=userId1;
+    
     const existingVote = await Voter.findOne({ pollId: PollId, userId });
     if (existingVote) {
-      return res.status(400).json({ message: "User already voted for this poll" });
-    }
-
-    
-    const newVoter = new Voter({ userId, pollId: PollId, optionId: OptId });
-    await newVoter.save();
-
-    
-   let updatedPoll= await Poll.updateOne(
-      { _id: PollId, "Option._id": OptId },
-      { $push: { "Option.$.votes": { userId,name} } }
       
+      if (existingVote.optionId.toString() === OptId) {
+        return res.status(200).json({ message: "Already voted for this option" });
+      }
+      
+      await Poll.updateOne(
+        { _id: PollId, "Option._id": existingVote.optionId },
+        { $pull: { "Option.$.votes": { userId } } }
+      );
+      
+      existingVote.optionId = OptId;
+      await existingVote.save();
+    } else {
+   
+      const newVoter = new Voter({ userId, pollId: PollId, optionId: OptId });
+      await newVoter.save();
+    }
+   
+    await Poll.updateOne(
+      { _id: PollId, "Option._id": OptId },
+      { $push: { "Option.$.votes": { userId, name } } }
     );
-console.log("updatedPoll",updatedPoll);
     return res.status(200).json({ message: "Vote recorded successfully" });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Internal server error", });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
 
 
 
@@ -315,8 +354,6 @@ console.log("polls",polls);
     if (!polls || polls.length === 0) {
       return res.status(404).json({ message: "No polls found" });
     }
-
-   
     const csvData: any[] = [];
 console.log("csvData",csvData);
     polls.forEach((poll) => {
@@ -325,17 +362,16 @@ console.log("csvData",csvData);
           PollQuestion: poll.Question,
           PollCreatedBy: poll.createdBy,
           Option: opt.text,
-          Votes: opt.votes.length, 
+          Votes: opt.votes.length,
         });
       });
     });
-
     const json2csvParser = new Parser();
     const csv = json2csvParser.parse(csvData);
     console.log("realcsv",csv);
-    res.header("Content-Type", "text/csv");
-    res.attachment("all_polls.csv");
-    return res.send(csv);
+    res.setHeader("Content-Type", "text/csv");
+res.setHeader("Content-Disposition", "attachment; filename=all_polls.csv");
+return res.status(200).send(csv);  // works fine with headers set
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });

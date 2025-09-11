@@ -91,8 +91,8 @@ app.get("/",(req,res)=>{
 
 
 app.use(cors({
-  origin: ["http://localhost:5173", "https://polling-frontend-ephz.vercel.app"], // allow local + deployed frontend
-  credentials: true, // allow cookies
+  origin: ["http://localhost:5173", "https://polling-frontend-ephz.vercel.app"], 
+  credentials: true, 
    methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Authorization', 'Content-Type'],
 }));
