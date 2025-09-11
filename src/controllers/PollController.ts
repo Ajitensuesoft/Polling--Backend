@@ -358,12 +358,14 @@ console.log("polls",polls);
 console.log("csvData",csvData);
     polls.forEach((poll) => {
       poll.Option.forEach((opt) => {
+        console.log("opt",opt);
         csvData.push({
-          PollQuestion: poll.Question,
-          PollCreatedBy: poll.createdBy,
-          Option: opt.text,
-          Votes: opt.votes.length,
-        });
+  PollQuestion: poll.Question,
+  PollCreatedBy: poll.createdBy,
+  Option: opt.text,
+  Votes: opt.votes.length,
+  Names: opt.votes.map((vote: any) => vote.name).join(", "),
+});
       });
     });
     const json2csvParser = new Parser();

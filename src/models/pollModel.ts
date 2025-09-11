@@ -44,7 +44,8 @@ const optionSchema=new mongoose.Schema<IOPTION>({
     // name:{
     //     type:String
     // }
-     votes: [voteSchema], 
+    //  votes: [voteSchema], 
+    votes: [{ type: voteSchema }],
 })
 
 const PollSchema=new mongoose.Schema<IPOLL>({
